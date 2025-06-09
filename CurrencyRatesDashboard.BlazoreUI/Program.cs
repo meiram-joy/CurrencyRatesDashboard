@@ -1,4 +1,4 @@
-using CurrencyRatesDashboard.Components;
+using CurrencyRatesDashboard.BlazoreUI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
