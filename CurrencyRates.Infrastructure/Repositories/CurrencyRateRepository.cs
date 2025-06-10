@@ -20,7 +20,7 @@ public class CurrencyRateRepository : ICurrencyRateRepository
     public async Task<IReadOnlyList<CurrencyRateAggregate>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         const string sql = @"SELECT Code, Name, Rate, RetrievedAt FROM CurrencyRates";
-
+        
         var result = await _connection.QueryAsync<CurrencyRateDto>(sql);
 
         return result

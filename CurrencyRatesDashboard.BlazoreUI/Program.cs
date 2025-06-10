@@ -5,6 +5,7 @@ using CurrencyRates.Infrastructure;
 using CurrencyRates.Infrastructure.Repositories;
 using CurrencyRates.Infrastructure.Services.Export;
 using CurrencyRatesDashboard.BlazoreUI.Components;
+using CurrencyRatesDashboard.BlazoreUI.Components.Pages.CurrencyRates;
 using Microsoft.OpenApi.Models;
 using Radzen;
 
@@ -14,7 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IExportService, ExportService>();
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<ExportService>();
 
 builder.Services.AddInfrastructure();
 
@@ -28,19 +31,13 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
 
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
