@@ -15,7 +15,7 @@ public class CurrencyRateApiClient : ICurrencyRateApiClient
     
     public async Task<IReadOnlyCollection<CurrencyRateAggregate>> GetLatestRatesAsync()
     {
-        var response = await _httpClient.GetAsync("/latest");
+        var response = await _httpClient.GetAsync("https://8b29c522-a109-4b79-996f-a2120dbc9d5b.mock.pstmn.io/api/testCurrencyRate");
 
         response.EnsureSuccessStatusCode();
 

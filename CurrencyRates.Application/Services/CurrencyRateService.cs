@@ -22,7 +22,7 @@ public class CurrencyRateService : ICurrencyRateService
         return _mapper.Map<IReadOnlyList<CurrencyRateDto>>(domainRates);
     }
 
-    public Task RefreshRatesAsync(CancellationToken cancellationToken = default)
+    public Task<IReadOnlyList<CurrencyRateDto>> RefreshRatesAsync(CancellationToken cancellationToken = default)
     {
         // TODO: получить курсы из внешнего API, обновить в репозитории
         // Например:

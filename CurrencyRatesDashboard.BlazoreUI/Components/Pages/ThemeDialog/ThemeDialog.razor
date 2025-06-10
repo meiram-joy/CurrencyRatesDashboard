@@ -1,0 +1,23 @@
+@using Radzen
+@using Radzen.Blazor
+
+<RadzenCard>
+    <RadzenStack Orientation="Orientation.Vertical" Gap="15px">
+        <RadzenText Style="font-size: 1.1rem;">Тема изменена</RadzenText>
+        <RadzenText>Интерфейс переключен на @Title</RadzenText>
+        <RadzenButton Text="OK" Click="@Close" ButtonStyle="ButtonStyle.Primary" />
+    </RadzenStack>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Inject]
+    DialogService DialogService { get; set; }
+
+    void Close()
+    {
+        DialogService.Close();
+    }
+}

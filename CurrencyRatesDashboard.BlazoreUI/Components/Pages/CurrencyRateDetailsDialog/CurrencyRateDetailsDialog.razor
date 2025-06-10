@@ -1,0 +1,44 @@
+@using Radzen
+@using Radzen.Blazor
+@using global::CurrencyRates.Application.DTOs
+
+<RadzenCard>
+    <RadzenStack Orientation="Orientation.Vertical" Gap="15px">
+        <RadzenStackItem>
+            <RadzenText Style="font-size: 1.2rem; font-weight: bold;">Детали курса валюты</RadzenText>
+        </RadzenStackItem>
+
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="20px">
+            <RadzenStack Orientation="Orientation.Vertical" Gap="5px" Style="width: 150px;">
+                <RadzenText Style="font-weight: bold;">Валюта:</RadzenText>
+                <RadzenText Style="font-weight: bold;">Код:</RadzenText>
+                <RadzenText Style="font-weight: bold;">Курс:</RadzenText>
+                <RadzenText Style="font-weight: bold;">Дата:</RadzenText>
+            </RadzenStack>
+            
+            <RadzenStack Orientation="Orientation.Vertical" Gap="5px">
+                <RadzenText>@Rate?.CurrencyName</RadzenText>
+                <RadzenText>@Rate?.CurrencyCode</RadzenText>
+                <RadzenText>@Rate?.Rate.ToString("N4")</RadzenText>
+                <RadzenText>@Rate?.Date.ToString("dd.MM.yyyy")</RadzenText>
+            </RadzenStack>
+        </RadzenStack>
+
+        <RadzenStackItem Style="margin-top: 20px;">
+            <RadzenButton Text="Закрыть" Click="@Close" ButtonStyle="ButtonStyle.Secondary" />
+        </RadzenStackItem>
+    </RadzenStack>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public CurrencyRateDto Rate { get; set; }
+
+    [Inject]
+    DialogService DialogService { get; set; }
+
+    void Close()
+    {
+        DialogService.Close();
+    }
+}
