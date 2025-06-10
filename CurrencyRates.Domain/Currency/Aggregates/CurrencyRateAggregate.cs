@@ -1,4 +1,5 @@
-﻿using CurrencyRates.Domain.Common;
+﻿using CSharpFunctionalExtensions;
+using CurrencyRates.Domain.Common;
 using CurrencyRates.Domain.Currency.DomainEvent;
 using CurrencyRates.Domain.Currency.Entities;
 using CurrencyRates.Domain.Currency.ValueObjects;
@@ -31,4 +32,21 @@ public class CurrencyRateAggregate : AggregateRoot
             AddDomainEvent(new CurrencyRateAddedEvent(newRate));
         }
     }
+    public static Result<CurrencyRateAggregate> Create(CurrencyCode code, string name, decimal rate, DateTime updatedAt)
+    {
+        var aggregate = new CurrencyRateAggregate
+        {
+            CurrencyCode = code,
+            Name = name,
+            Rate = rate,
+            UpdatedAt = updatedAt
+        };
+
+        return Result.Success(aggregate);
+    }
+
+    public CurrencyCode CurrencyCode { get; private set; }
+    public string Name { get; private set; }
+    public decimal Rate { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
 }

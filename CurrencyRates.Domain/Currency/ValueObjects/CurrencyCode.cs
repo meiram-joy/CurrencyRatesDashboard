@@ -11,14 +11,14 @@ public sealed class CurrencyCode : ValueObject
             Code = code;
     }
     
-    public static CurrencyCode Create(string code)
+    public static Result<CurrencyCode> Create(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
             throw new ArgumentException("Currency code cannot be null or empty.", nameof(code));
         }
 
-        return new CurrencyCode(code);
+        return Result.Success(new CurrencyCode(code));
     }
     
     protected override IEnumerable<object> GetEqualityComponents()

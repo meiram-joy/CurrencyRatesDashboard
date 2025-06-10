@@ -9,7 +9,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<CurrencyRate, CurrencyRateDto>()
-            .ForMember(dest => dest.CurrencyCode, opt =>
-            opt.MapFrom(src => src.CurrencyCode));
+            .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.CurrencyCode));
     }
 }
