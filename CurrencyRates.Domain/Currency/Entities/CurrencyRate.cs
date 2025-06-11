@@ -9,18 +9,16 @@ public class CurrencyRate : Entity
     public decimal Rate { get; private set; }
     public DateTime RateDate { get; private set; }
     public string Source { get; private set; }
-    public bool IsOfficial { get; private set; }
     
     protected CurrencyRate(){}
 
-    public CurrencyRate(CurrencyCode currencyCode, decimal rate, DateTime rateDate, string source, bool isOfficial)
+    public CurrencyRate(CurrencyCode currencyCode, decimal rate, DateTime rateDate)
     {
         if (rate <= 0 ) throw new ArgumentOutOfRangeException(nameof(rate));
+        if (rateDate == default) throw new ArgumentException("Rate date cannot be default value.", nameof(rateDate));
         CurrencyCode = currencyCode;
         Rate = rate;
         RateDate = rateDate;
-        Source = source;
-        IsOfficial = isOfficial;
     }
 
     public void UpdateRate(decimal newRate, DateTime rateDate)

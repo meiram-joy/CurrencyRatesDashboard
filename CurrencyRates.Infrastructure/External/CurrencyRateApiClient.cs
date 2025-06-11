@@ -15,27 +15,23 @@ public class CurrencyRateApiClient : ICurrencyRateApiClient
     
     public async Task<IReadOnlyCollection<CurrencyRateAggregate>> GetLatestRatesAsync()
     {
-        var response = await _httpClient.GetAsync("https://8b29c522-a109-4b79-996f-a2120dbc9d5b.mock.pstmn.io/api/testCurrencyRate");
-
+        var response = await _httpClient.GetAsync("api/testCurrencyRate");
         response.EnsureSuccessStatusCode();
-
         var content = await response.Content.ReadAsStringAsync();
-
-        // Пример JSON от мок-сервера
-        // [
-        //   { "code": "USD", "rate": 1.0, "name": "US Dollar" },
-        //   { "code": "EUR", "rate": 0.92, "name": "Euro" }
-        // ]
 
         var rates = System.Text.Json.JsonSerializer.Deserialize<List<MockCurrencyDto>>(content);
 
-        return rates!
+        var validRates = rates!
+            .Where(dto => !string.IsNullOrWhiteSpace(dto.Code))
+            .ToList();
+
+        return validRates
             .Select(dto =>
                 CurrencyRateAggregate.Create(
                     CurrencyCode.Create(dto.Code).Value,
                     dto.Name,
                     (decimal)dto.Rate,
-                    DateTime.UtcNow
+                    dto.RetrievedAt
                 ).Value
             ).ToList();
     }
@@ -44,5 +40,6 @@ public class CurrencyRateApiClient : ICurrencyRateApiClient
         public string Code { get; set; } = default!;
         public string Name { get; set; } = default!;
         public double Rate { get; set; }
+        public DateTime RetrievedAt { get; set; } = DateTime.UtcNow;
     }
 }

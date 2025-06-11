@@ -7,9 +7,12 @@ public class CurrencyRateAddedEvent : IDomainEvent
 {
     public CurrencyRateAddedEvent(CurrencyRate newRate)
     {
-        throw new NotImplementedException();
+        ID = Guid.NewGuid();
+        OccurredOn = DateTime.UtcNow;
+        NewRate = newRate;
     }
 
     public Guid ID { get; }
     public DateTime OccurredOn { get; }
+    public CurrencyRate NewRate { get; }
 }

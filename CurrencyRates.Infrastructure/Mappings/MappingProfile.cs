@@ -13,7 +13,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.CurrencyCode));
         CreateMap<CurrencyRateAggregate, CurrencyRateDto>()
             .ForMember(dest => dest.CurrencyName, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.UpdatedAt));
+            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.RetrievedAt));
 
     }
 }

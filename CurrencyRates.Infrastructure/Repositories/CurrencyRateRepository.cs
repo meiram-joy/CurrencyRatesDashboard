@@ -56,13 +56,21 @@ public class CurrencyRateRepository : ICurrencyRateRepository
         const string sql = @"INSERT INTO CurrencyRates (Code, Name, Rate, RetrievedAt) 
                              VALUES (@Code, @Name, @Rate, @RetrievedAt)";
 
-        await _connection.ExecuteAsync(sql, new
+        try
         {
-            Code = rate.CurrencyCode.Code,
-            rate.Name,
-            rate.Rate,
-            rate.UpdatedAt
-        });
+            await _connection.ExecuteAsync(sql, new
+            {
+                Code = rate.CurrencyCode.Code,
+                Name = rate.Name,
+                Rate = rate.Rate,
+                RetrievedAt = rate.RetrievedAt
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при вставке: {ex.Message}");
+            throw;
+        }
     }
 
     public async Task UpdateAsync(CurrencyRateAggregate rate, CancellationToken cancellationToken = default)
@@ -74,9 +82,9 @@ public class CurrencyRateRepository : ICurrencyRateRepository
         await _connection.ExecuteAsync(sql, new
         {
             Code = rate.CurrencyCode.Code,
-            rate.Name,
-            rate.Rate,
-            rate.UpdatedAt
+            Name = rate.Name,
+            Rate = rate.Rate,
+            RetrievedAt = rate.RetrievedAt
         });
     }
 

@@ -12,12 +12,11 @@ public class CurrencyRateAggregate : AggregateRoot
     
     public IReadOnlyCollection<CurrencyRate> CurrencyRates => _currencyRates.AsReadOnly();
 
-    public void AddOrUpdateQuote(CurrencyCode currencyCode, decimal rate, DateTime rateDate, string source, bool isOfficial)
+    public void AddOrUpdateQuote(CurrencyCode currencyCode, decimal rate, DateTime rateDate)
     {
         if (currencyCode == null) throw new ArgumentNullException(nameof(currencyCode));
         if (rate <= 0) throw new ArgumentOutOfRangeException(nameof(rate));
         if (rateDate == default) throw new ArgumentException("Rate date cannot be default value.", nameof(rateDate));
-        if (string.IsNullOrWhiteSpace(source)) throw new ArgumentException("Source cannot be null or empty.", nameof(source));
 
         var existingRate = _currencyRates.FirstOrDefault(r => r.CurrencyCode.Equals(currencyCode) && r.RateDate.Date == rateDate.Date);
         
@@ -27,7 +26,7 @@ public class CurrencyRateAggregate : AggregateRoot
         }
         else
         {
-            var newRate = new CurrencyRate(currencyCode, rate, rateDate, source, isOfficial);
+            var newRate = new CurrencyRate(currencyCode, rate, rateDate);
             _currencyRates.Add(newRate);
             AddDomainEvent(new CurrencyRateAddedEvent(newRate));
         }
@@ -39,7 +38,7 @@ public class CurrencyRateAggregate : AggregateRoot
             CurrencyCode = code,
             Name = name,
             Rate = rate,
-            UpdatedAt = updatedAt
+            RetrievedAt = updatedAt
         };
 
         return Result.Success(aggregate);
@@ -48,5 +47,5 @@ public class CurrencyRateAggregate : AggregateRoot
     public CurrencyCode CurrencyCode { get; private set; }
     public string Name { get; private set; }
     public decimal Rate { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime RetrievedAt { get; private set; }
 }

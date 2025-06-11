@@ -2,4 +2,4 @@
 
 namespace CurrencyRates.Application.Commands;
 
-public record RefreshCurrencyRatesCommand() : IRequest, IRequest<Unit>;
+public record RefreshCurrencyRatesCommand() : IRequest<Unit>;

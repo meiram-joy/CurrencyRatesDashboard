@@ -5,15 +5,11 @@ VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRates.Infrastructure", "CurrencyRates.Infrastructure\CurrencyRates.Infrastructure.csproj", "{CFFB8690-BC4D-4DD4-B050-95F9341E609A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRates.BackgroundJobs", "CurrencyRates.BackgroundJobs\CurrencyRates.BackgroundJobs.csproj", "{6FA352B2-5EE2-483D-B522-CC79607FFD33}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRates.Domain", "CurrencyRates.Domain\CurrencyRates.Domain.csproj", "{3D771C07-0D2F-40C5-899F-D1E50016DC98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRates.Application", "CurrencyRates.Application\CurrencyRates.Application.csproj", "{62063C6B-029C-44AF-B9BB-8EB460EAF83F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRatesDashboard.BlazoreUI", "CurrencyRatesDashboard.BlazoreUI\CurrencyRatesDashboard.BlazoreUI.csproj", "{3C5462EE-0244-4031-8848-6311F00DC258}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{A48C9086-3985-4B3A-9A6E-46FE29E20946}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrencyRatesDashboard.BlazoreUIss", "CurrencyRatesDashboard.BlazoreUIss\CurrencyRatesDashboard.BlazoreUIss.csproj", "{AE1458A8-EA4E-44E3-A687-9EFFA56DF5FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +21,6 @@ Global
 		{CFFB8690-BC4D-4DD4-B050-95F9341E609A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFFB8690-BC4D-4DD4-B050-95F9341E609A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFFB8690-BC4D-4DD4-B050-95F9341E609A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FA352B2-5EE2-483D-B522-CC79607FFD33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FA352B2-5EE2-483D-B522-CC79607FFD33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FA352B2-5EE2-483D-B522-CC79607FFD33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FA352B2-5EE2-483D-B522-CC79607FFD33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D771C07-0D2F-40C5-899F-D1E50016DC98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3D771C07-0D2F-40C5-899F-D1E50016DC98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D771C07-0D2F-40C5-899F-D1E50016DC98}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -37,14 +29,10 @@ Global
 		{62063C6B-029C-44AF-B9BB-8EB460EAF83F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62063C6B-029C-44AF-B9BB-8EB460EAF83F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62063C6B-029C-44AF-B9BB-8EB460EAF83F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C5462EE-0244-4031-8848-6311F00DC258}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C5462EE-0244-4031-8848-6311F00DC258}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C5462EE-0244-4031-8848-6311F00DC258}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C5462EE-0244-4031-8848-6311F00DC258}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A48C9086-3985-4B3A-9A6E-46FE29E20946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A48C9086-3985-4B3A-9A6E-46FE29E20946}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A48C9086-3985-4B3A-9A6E-46FE29E20946}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A48C9086-3985-4B3A-9A6E-46FE29E20946}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE1458A8-EA4E-44E3-A687-9EFFA56DF5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE1458A8-EA4E-44E3-A687-9EFFA56DF5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE1458A8-EA4E-44E3-A687-9EFFA56DF5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE1458A8-EA4E-44E3-A687-9EFFA56DF5FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

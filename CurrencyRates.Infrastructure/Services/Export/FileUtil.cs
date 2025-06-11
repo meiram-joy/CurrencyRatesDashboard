@@ -1,25 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace CurrencyRates.Infrastructure.Services.Export;
 
 public class FileUtil
 {
-    public static async Task SaveAs(string filename, string contentType, byte[] data)
+    private readonly IJSRuntime _jsRuntime;
+
+    public FileUtil(IJSRuntime jsRuntime)
     {
-        var jsRuntime = GetJsRuntime();
-        await jsRuntime.InvokeAsync<object>(
+        _jsRuntime = jsRuntime;
+    }
+
+    public async Task SaveAs(string filename, string contentType, byte[] data)
+    {
+        await _jsRuntime.InvokeVoidAsync(
             "saveAsFile",
             filename,
             contentType,
             Convert.ToBase64String(data));
-    }
-
-    private static IJSRuntime GetJsRuntime()
-    {
-        var serviceProvider = new ServiceCollection()
-            .AddScoped<IJSRuntime, JSRuntime>()
-            .BuildServiceProvider();
-        return serviceProvider.GetRequiredService<IJSRuntime>();
     }
 }
