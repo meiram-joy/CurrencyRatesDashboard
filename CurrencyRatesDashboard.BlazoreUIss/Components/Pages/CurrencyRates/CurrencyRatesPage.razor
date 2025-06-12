@@ -12,7 +12,6 @@
 @inject NotificationService NotificationService
 @inject ExportService ExportService
 @inject MediatR.IMediator Mediator
-@inject DialogService DialogService
 
 
 <RadzenDataGrid @ref="_grid"
@@ -67,13 +66,12 @@ Style="margin-top: 20px;">
     }
     async Task OnRefreshClick()
     {
-        Console.WriteLine("OnRefreshClick called");
         await RefreshRates();
     }
 
     private async Task LoadData()
     {
-        _currencyRates = await CurrencyRateService.GetAllAsync();
+        _currencyRates = await Mediator.Send(new GetCurrencyRatesQuery());
         StateHasChanged();
     }
     async Task CurrencyRateTransposedDialog(CurrencyRateDto rate)
@@ -97,7 +95,7 @@ Style="margin-top: 20px;">
         try
         {
             var query = new RefreshCurrencyRatesCommand();
-             await Mediator.Send(query);
+            await Mediator.Send(query);
             _currencyRates = await Mediator.Send(new GetCurrencyRatesQuery());
             NotificationService.Notify(new NotificationMessage
                 {

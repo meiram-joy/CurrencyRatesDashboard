@@ -12,7 +12,7 @@ public class CurrencyRateAggregate : AggregateRoot
     
     public IReadOnlyCollection<CurrencyRate> CurrencyRates => _currencyRates.AsReadOnly();
 
-    public void AddOrUpdateQuote(CurrencyCode currencyCode, decimal rate, DateTime rateDate)
+    public void AddOrUpdateQuote(CurrencyCode currencyCode, double rate, DateTime rateDate)
     {
         if (currencyCode == null) throw new ArgumentNullException(nameof(currencyCode));
         if (rate <= 0) throw new ArgumentOutOfRangeException(nameof(rate));
@@ -31,7 +31,7 @@ public class CurrencyRateAggregate : AggregateRoot
             AddDomainEvent(new CurrencyRateAddedEvent(newRate));
         }
     }
-    public static Result<CurrencyRateAggregate> Create(CurrencyCode code, string name, decimal rate, DateTime updatedAt)
+    public static Result<CurrencyRateAggregate> Create(CurrencyCode code, string name, double rate, DateTime updatedAt)
     {
         var aggregate = new CurrencyRateAggregate
         {
@@ -46,6 +46,6 @@ public class CurrencyRateAggregate : AggregateRoot
 
     public CurrencyCode CurrencyCode { get; private set; }
     public string Name { get; private set; }
-    public decimal Rate { get; private set; }
+    public double Rate { get; private set; }
     public DateTime RetrievedAt { get; private set; }
 }

@@ -1,27 +1,30 @@
 ﻿using System.Data;
 using CurrencyRates.Domain.Currency.Aggregates;
-using CurrencyRates.Domain.Currency.Entities;
 using CurrencyRates.Domain.Currency.Interfaces;
 using CurrencyRates.Domain.Currency.ValueObjects;
 using Dapper;
-using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 
 namespace CurrencyRates.Infrastructure.Repositories;
 
 public class CurrencyRateRepository : ICurrencyRateRepository
 {
-    private readonly IDbConnection _connection;
+    private readonly IConfiguration _configuration;
     
     public CurrencyRateRepository(IConfiguration configuration)
     {
-        _connection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        _configuration = configuration;
+        EnsureTableCreated(_configuration);
     }
     public async Task<IReadOnlyList<CurrencyRateAggregate>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+        using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
+        await connection.OpenAsync(cancellationToken);
+        
         const string sql = @"SELECT Code, Name, Rate, RetrievedAt FROM CurrencyRates";
         
-        var result = await _connection.QueryAsync<CurrencyRateDto>(sql);
+        var result = await connection.QueryAsync<CurrencyRateDto>(sql);
 
         return result
             .Select(r =>
@@ -36,16 +39,19 @@ public class CurrencyRateRepository : ICurrencyRateRepository
 
     public async Task<CurrencyRateAggregate?> GetByCodeAsync(CurrencyCode currencyCode, CancellationToken cancellationToken = default)
     {
+        using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
+        await connection.OpenAsync(cancellationToken);
+        
         const string sql = @"SELECT Code, Name, Rate, RetrievedAt FROM CurrencyRates WHERE Code = @Code";
 
-        var dto = await _connection.QuerySingleOrDefaultAsync<CurrencyRateDto>(sql, new { Code = currencyCode.Code });
+        var dto = await connection.QuerySingleOrDefaultAsync<CurrencyRateDto>(sql, new { Code = currencyCode.Code });
 
         if (dto == null)
             return null;
 
         return CurrencyRateAggregate.Create(
             CurrencyCode.Create(dto.Code).Value,
-            dto.Name,
+             dto.Name,
             dto.Rate,
             dto.RetrievedAt
         ).Value;
@@ -53,12 +59,15 @@ public class CurrencyRateRepository : ICurrencyRateRepository
 
     public async Task AddAsync(CurrencyRateAggregate rate, CancellationToken cancellationToken = default)
     {
+        using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
+        await connection.OpenAsync(cancellationToken);
+        
         const string sql = @"INSERT INTO CurrencyRates (Code, Name, Rate, RetrievedAt) 
                              VALUES (@Code, @Name, @Rate, @RetrievedAt)";
 
         try
         {
-            await _connection.ExecuteAsync(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Code = rate.CurrencyCode.Code,
                 Name = rate.Name,
@@ -75,11 +84,14 @@ public class CurrencyRateRepository : ICurrencyRateRepository
 
     public async Task UpdateAsync(CurrencyRateAggregate rate, CancellationToken cancellationToken = default)
     {
+        using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
+        await connection.OpenAsync(cancellationToken);
+        
         const string sql = @"UPDATE CurrencyRates 
                              SET Name = @Name, Rate = @Rate, RetrievedAt = @RetrievedAt 
                              WHERE Code = @Code";
 
-        await _connection.ExecuteAsync(sql, new
+        await connection.ExecuteAsync(sql, new
         {
             Code = rate.CurrencyCode.Code,
             Name = rate.Name,
@@ -88,5 +100,29 @@ public class CurrencyRateRepository : ICurrencyRateRepository
         });
     }
 
-    private record CurrencyRateDto(string Code, string Name, decimal Rate, DateTime RetrievedAt);
+    public class CurrencyRateDto
+    {
+        public string Code { get; set; } = default!;
+        public string Name { get; set; } = default!;
+        public double Rate { get; set; }
+        public DateTime RetrievedAt { get; set; }
+    }
+    
+    private void EnsureTableCreated(IConfiguration _configuration)
+    {
+        using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
+        connection.Open();
+        var createTableSql = @"
+            CREATE TABLE IF NOT EXISTS CurrencyRates (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Code NVARCHAR(50) NOT NULL,
+                Name NVARCHAR(20) NOT NULL,
+                Rate REAL NOT NULL,
+                RetrievedAt DATETIME NOT NULL
+            );
+        ";
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = createTableSql;
+        cmd.ExecuteNonQuery();
+    }
 }
