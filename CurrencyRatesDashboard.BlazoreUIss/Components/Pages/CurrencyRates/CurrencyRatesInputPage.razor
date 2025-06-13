@@ -1,0 +1,78 @@
+﻿@page "/CurrencyRatesInputPage"
+@using global::CurrencyRates.Application.Commands
+@using global::CurrencyRates.Application.DTOs
+@using global::CurrencyRates.Application.Queries
+@using MediatR
+@inject MediatR.IMediator Mediator
+@inject NotificationService NotificationService
+@rendermode RenderMode.InteractiveServer
+
+
+<div class="rz-p-0 rz-p-md-12" style="">
+   <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem">
+        <RadzenColumn Size="12" SizeSM="6" >
+            <RadzenStack >
+                <RadzenFormField Text="Код" Variant="@variant">
+                    <RadzenTextBox @bind-Value="@codes" />
+                </RadzenFormField>
+                <RadzenFormField Text="Название валюты" Variant="@variant">
+                    <RadzenTextBox @bind-Value="@nameRate" />
+                </RadzenFormField>
+                <RadzenFormField Text="Курс" Variant="@variant">
+                    <RadzenNumeric @bind-Value="@rate" />
+                </RadzenFormField>
+                <RadzenFormField Text="Дата" Variant="@variant">
+                    <RadzenDatePicker  @bind-Value="@rateDate" ShowTime="true" Max="@DateTime.Now" />
+                </RadzenFormField>
+                <RadzenButton Variant="Variant.Flat" Shade="Shade.Lighter" Click="@OnRefreshClick" Text="Отправить " ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+</div>
+
+@code {
+    private IReadOnlyList<CurrencyRateDto> _currencyRates = new List<CurrencyRateDto>();
+    Variant variant = Variant.Outlined;
+    
+    string nameRate = "Text";
+    string codes = "Object";
+    int rate = 123;
+    DateTime? rateDate = DateTime.Today;
+    
+    async Task OnRefreshClick()
+    {
+        await RefreshRates();
+    }
+    
+    private async Task RefreshRates()
+    {
+        var entity = new CurrencyRateDto
+        {
+            CurrencyName = nameRate,
+            CurrencyCode = codes,
+            Rate = rate,
+            Date = rateDate ?? DateTime.Now
+        };
+        var result =  await Mediator.Send(new CreateCurrencyRateCommand(entity));
+        if (result.IsFailure)
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "Ошибка",
+                Detail = result.Error,
+                Duration = 4000
+            });
+        }
+        else
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = "Успех",
+                Detail = "Курс валюты успешно добавлен",
+                Duration = 4000
+            });
+        }
+    }
+}

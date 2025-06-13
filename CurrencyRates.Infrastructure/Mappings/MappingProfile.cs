@@ -14,6 +14,9 @@ public class MappingProfile : Profile
         CreateMap<CurrencyRateAggregate, CurrencyRateDto>()
             .ForMember(dest => dest.CurrencyName, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.RetrievedAt));
-
+        CreateMap<CurrencyRateDto, CurrencyRateAggregate>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CurrencyName))
+            .ForMember(dest => dest.RetrievedAt, opt => opt.MapFrom(src => src.Date))
+            .ForMember(dest => dest.CurrencyCode, opt => opt.MapFrom(src => src.CurrencyCode));
     }
 }

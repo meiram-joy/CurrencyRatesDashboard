@@ -1,6 +1,9 @@
-﻿namespace CurrencyRates.Application.DTOs;
+﻿using CSharpFunctionalExtensions;
+using MediatR;
 
-public class CurrencyRateDto
+namespace CurrencyRates.Application.DTOs;
+
+public class CurrencyRateDto : IRequest<Result>
 {
     public string CurrencyCode { get; set; } 
     public string CurrencyName { get; set; } 
