@@ -18,7 +18,7 @@ builder.Services.AddRazorComponents()
 
 
 builder.Services.AddScoped<ExportService>();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 // Add services to the container.
 builder.Services.AddRazorComponents();
 builder.Services.AddScoped<DialogService>();

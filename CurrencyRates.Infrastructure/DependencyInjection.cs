@@ -7,12 +7,16 @@ using CurrencyRates.Infrastructure.Repositories;
 using CurrencyRates.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using CurrencyRates.Domain.Currency.Interfaces.Auth;
+using CurrencyRates.Infrastructure.Repositories.Auth;
+using CurrencyRates.Infrastructure.Services.Auth;
+using Microsoft.Extensions.Configuration;
 
 namespace CurrencyRates.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,IConfiguration config)
     {
         services.AddScoped<ICurrencyRateRepository, CurrencyRateRepository>();
 
@@ -29,6 +33,12 @@ public static class DependencyInjection
       
         services.AddScoped<CurrencyRateSyncService>();
         services.AddHostedService<CurrencyRateSyncHostedService>();
+        
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        services.Configure<JwtSettings>(config.GetSection(JwtSettings.SectionName));
         
         return services;
     }
