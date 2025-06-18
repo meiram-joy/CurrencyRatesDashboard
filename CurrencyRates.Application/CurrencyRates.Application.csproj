@@ -16,4 +16,8 @@
 		<ProjectReference Include="..\CurrencyRates.Domain\CurrencyRates.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Interfaces\Auth\" />
+	</ItemGroup>
+
 </Project>

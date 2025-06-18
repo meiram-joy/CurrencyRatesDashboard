@@ -16,7 +16,7 @@ public class AuthDomainService : IAuthDomainService
         _refreshTokenRepository = refreshTokenRepository;
     }
 
-    public async Task<(string accessToken, RefreshToken refreshToken)> LoginAsync(User user, string password)
+    public async Task<(string accessToken, RefreshToken refreshToken)> LoginAsync(User user, string password, CancellationToken cancellationToken = default)
     {
         if (!user.CheckPassword(password))
             throw new UnauthorizedAccessException("Invalid credentials");
@@ -25,32 +25,32 @@ public class AuthDomainService : IAuthDomainService
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
         user.AddRefreshToken(refreshToken);
-        await _refreshTokenRepository.SaveAsync(user.Id, refreshToken.Token, refreshToken.Expires);
+        await _refreshTokenRepository.SaveAsync(user.ID, refreshToken, cancellationToken);
 
         return (accessToken, refreshToken);
     }
 
-    public async Task<(string accessToken, RefreshToken refreshToken)> RefreshAsync(User user, string refreshToken)
+    public async Task<(string accessToken, RefreshToken refreshToken)> RefreshAsync(User user, RefreshToken refreshToken, CancellationToken cancellationToken = default)
     {
-        if (!user.HasValidRefreshToken(refreshToken))
+        if (!user.HasValidRefreshToken(refreshToken.Token))
             throw new UnauthorizedAccessException("Invalid refresh token");
 
         var newAccessToken = _jwtTokenService.GenerateAccessToken(user);
         var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
-        user.RevokeRefreshToken(refreshToken);
+        user.RevokeRefreshToken(refreshToken.Token);
         user.AddRefreshToken(newRefreshToken);
 
-        await _refreshTokenRepository.InvalidateAsync(user.Id, refreshToken);
-        await _refreshTokenRepository.SaveAsync(user.Id, newRefreshToken.Token, newRefreshToken.Expires);
+        await _refreshTokenRepository.InvalidateAsync(user.ID, refreshToken,cancellationToken);
+        await _refreshTokenRepository.SaveAsync(user.ID, newRefreshToken, cancellationToken);
 
         return (newAccessToken, newRefreshToken);
     }
 
-    public async Task LogoutAsync(User user, string refreshToken)
+    public async Task LogoutAsync(User user, RefreshToken refreshToken, CancellationToken cancellationToken = default)
     {
-        user.RevokeRefreshToken(refreshToken);
-        await _refreshTokenRepository.InvalidateAsync(user.Id, refreshToken);
+        user.RevokeRefreshToken(refreshToken.Token);
+        await _refreshTokenRepository.InvalidateAsync(user.ID, refreshToken,cancellationToken);
     }
 }
 

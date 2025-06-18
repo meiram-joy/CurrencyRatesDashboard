@@ -7,7 +7,7 @@ public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
 {
     public LoginUserCommandValidator()
     {
-        RuleFor(x => x.Email)
+        RuleFor(x => x.Email.Value)
             .NotEmpty().WithMessage("Email is required")
             .EmailAddress().WithMessage("Invalid email format");
 

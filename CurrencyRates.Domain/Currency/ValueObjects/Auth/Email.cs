@@ -4,7 +4,7 @@ namespace CurrencyRates.Domain.Currency.ValueObjects.Auth;
 
 public sealed  class Email : ValueObject<Email>
 {
-    private string Value { get; set; }
+    public string Value { get; private set; }
 
     private Email(string value) => Value = value;
 

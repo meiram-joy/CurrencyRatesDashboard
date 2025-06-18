@@ -6,7 +6,6 @@ namespace CurrencyRates.Domain.Currency.Aggregates.Auth;
 
 public class User : AggregateRoot
 {
-   public Guid Id {get; private set;}
    public Email Email {get; private set;}
    public PasswordHash PasswordHash {get; private set;}
    public Role Role {get; private set;}
@@ -19,7 +18,7 @@ public class User : AggregateRoot
 
    private User(Guid id, Email email, PasswordHash passwordHash, Role role)
    {
-      Id = id;
+      ID = id;
       Email = email;
       PasswordHash = passwordHash;
       Role = role;
@@ -40,6 +39,20 @@ public class User : AggregateRoot
       var roleObj = Role.From(role);
       
       return Result.Success(new User(Guid.NewGuid(), emailResult.Value, passwordHash, roleObj));
+   }
+   public static Result<User> Create(string ID,string email, string password, string role)
+   {
+      if(string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+         return Result.Failure<User>("Invalid email format");
+      if(role == null) throw new ArgumentNullException(nameof(role));
+      
+      var emailResult = Email.Create(email);
+      if(emailResult.IsFailure) return Result.Failure<User>("Invalid email format");
+
+      var passwordHash = new PasswordHash(password);
+      var roleObj = Role.From(role);
+      
+      return new User(Guid.Parse(ID), emailResult.Value, passwordHash, roleObj);
    }
    public bool CheckPassword(string password) => PasswordHash.Verify(password);
 

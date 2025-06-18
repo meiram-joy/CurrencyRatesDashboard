@@ -3,12 +3,14 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CurrencyRates.Domain.Currency.Aggregates.Auth;
+using CurrencyRates.Domain.Currency.Services;
+using CurrencyRates.Domain.Currency.ValueObjects.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CurrencyRates.Infrastructure.Services.Auth;
 
-public class JwtTokenGenerator : IJwtTokenGenerator
+public class JwtTokenGenerator : IJwtTokenService
 {
     private readonly JwtSettings _settings;
 
@@ -16,14 +18,15 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     {
         _settings = options.Value;
     }
+    
 
-    public string GenerateToken(User user)
+    public string GenerateAccessToken(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email,  user.Email.ToString()),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, user.ID.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email,  user.Email.Value),
+            new Claim(ClaimTypes.Role, user.Role.Name)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret));
@@ -39,12 +42,10 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
+    RefreshToken IJwtTokenService.GenerateRefreshToken()
     {
-        var randomBytes = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return Convert.ToBase64String(randomBytes);
+        var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        return new RefreshToken(token, DateTime.UtcNow.AddDays(7));
     }
 }
 

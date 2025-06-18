@@ -31,7 +31,7 @@ private readonly IRefreshTokenRepository _refreshTokenRepository;
         user.AddRefreshToken(refreshToken);
 
         await _userRepository.UpdateAsync(user);
-        await _refreshTokenRepository.SaveAsync(user.Id, refreshToken.Token, refreshToken.Expires);
+        await _refreshTokenRepository.SaveAsync(user.ID, refreshToken, cancellationToken);
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user);
         return Result.Success(new AuthResultDto(accessToken, refreshToken.Token));

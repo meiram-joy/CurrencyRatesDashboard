@@ -5,24 +5,34 @@ using MediatR;
 
 namespace CurrencyRates.Application.Commands.Auth.RefreshToken;
 
-public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, Result<string>>
+public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand,  Result<(string AccessToken, string RefreshToken)>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IJwtTokenService _jwtTokenService;
+    private readonly IAuthDomainService _authDomainService;
 
-    public RefreshTokenCommandHandler(IUserRepository userRepository, IJwtTokenService jwtTokenService)
+    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthDomainService authDomainService)
     {
         _userRepository = userRepository;
-        _jwtTokenService = jwtTokenService;
+        _authDomainService = authDomainService;
     }
 
-    public async Task<Result<string>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<Result<(string, string)>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetByIdAsync(request.UserId);
-        if (user == null || !user.HasValidRefreshToken(request.RefreshToken))
-            return Result.Failure<string>("Invalid refresh token");
-
-        var newAccessToken = _jwtTokenService.GenerateAccessToken(user);
-        return Result.Success(newAccessToken);
+        if (user == null)
+            return Result.Failure<(string, string)>("User not found");
+        
+        var refreshToken = user.RefreshTokens.FirstOrDefault(x => x.Token == request.RefreshToken);
+        if (refreshToken == null)
+            return Result.Failure<(string, string)>("Invalid refresh token");
+        try
+        {
+            var (accessToken, newRefreshToken) = await _authDomainService.RefreshAsync(user, refreshToken, cancellationToken);
+            return Result.Success((accessToken, newRefreshToken.Token));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Result.Failure<(string, string)>(ex.Message);
+        }
     }
 }
