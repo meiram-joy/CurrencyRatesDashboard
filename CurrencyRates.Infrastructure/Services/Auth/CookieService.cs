@@ -36,7 +36,7 @@ public class CookieService : ICookieService
         response.Cookies.Delete("refreshToken", new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = false,
             SameSite = SameSiteMode.Strict
         });
     }

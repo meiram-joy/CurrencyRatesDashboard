@@ -37,7 +37,7 @@ public class JWTAuthenticationHandler : AuthenticationHandler<CusomOption>
     }
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        Response.Redirect("/login");
+        Response.Redirect("/");
         return Task.CompletedTask;
     }
 

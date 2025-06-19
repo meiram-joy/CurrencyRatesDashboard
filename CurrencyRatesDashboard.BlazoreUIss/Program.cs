@@ -63,9 +63,10 @@ var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<
 
 builder.Services.AddAuthentication(options =>
     {
+        options.DefaultScheme = "JWTAuth";
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddScheme<CusomOption,JWTAuthenticationHandler>("JWTAuth", options => { })
+    }).AddScheme<CusomOption, JWTAuthenticationHandler>("JWTAuth", options => { })
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
@@ -76,7 +77,7 @@ builder.Services.AddAuthentication(options =>
         {
             NameClaimType = JwtRegisteredClaimNames.Sub,
             RoleClaimType = ClaimTypes.Role,
-            
+
             ValidateIssuer = true,
             ValidIssuer = jwtSettings.Issuer,
 
@@ -87,6 +88,19 @@ builder.Services.AddAuthentication(options =>
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.HttpContext.Request.Cookies["AccessToken"];
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 builder.Services.AddAuthorization(options =>

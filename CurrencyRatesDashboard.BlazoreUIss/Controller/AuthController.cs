@@ -44,7 +44,7 @@ public class AuthController : ControllerBase
         return Ok(new { accessToken = result.Value.AccessToken });
     }
     
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command, CancellationToken cancellationToken)
     {
