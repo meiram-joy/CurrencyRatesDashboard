@@ -46,8 +46,17 @@ public class AuthController : ControllerBase
     
     [Authorize]
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
     {
+        var userId = User.FindFirst("sub").Value;
+        if (!Guid.TryParse(userId, out var guid))
+            return Unauthorized("Invalid token");
+        
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (string.IsNullOrEmpty(refreshToken))
+            return BadRequest("Refresh token not found in cookies.");
+        
+        var command = new LogoutUserCommand(guid, refreshToken);
         var result = await _mediator.Send(command, cancellationToken);
         if (!result.IsSuccess)
             return BadRequest(result.Error);
@@ -58,14 +67,18 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
         var userId = User.FindFirst("sub")?.Value;
 
         if (!Guid.TryParse(userId, out var guid))
             return Unauthorized("Invalid token");
-
-        var command = new LogoutUserCommand(guid, request.RefreshToken);
+        
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (string.IsNullOrEmpty(refreshToken))
+            return BadRequest("Refresh token not found in cookies.");
+        
+        var command = new LogoutUserCommand(guid, refreshToken);
         var result = await _mediator.Send(command, cancellationToken);
         
         _cookieService.DeleteRefreshTokenCookie(Response);

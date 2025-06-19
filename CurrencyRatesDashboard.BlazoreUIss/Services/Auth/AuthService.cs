@@ -5,14 +5,13 @@ namespace CurrencyRatesDashboard.BlazoreUIss.Services.Auth;
 
 public class AuthService
 {
-    private readonly AccessTokenService _accessTokenService;
+
     private readonly NavigationManager _nav;
 
     private readonly HttpClient _http;
 
-    public AuthService(AccessTokenService accessTokenService,NavigationManager nav, HttpClient http)
+    public AuthService( NavigationManager nav, HttpClient http)
     {
-        _accessTokenService = accessTokenService;
         _nav = nav;
         _http = http;
     }
@@ -29,8 +28,6 @@ public class AuthService
             var token = await status.Content.ReadAsStreamAsync();
             
             var result = await status.Content.ReadFromJsonAsync<LoginResponse>();
-            
-            await _accessTokenService.SetTokenAsync(result.AccessToken);
             
             return true;
         }

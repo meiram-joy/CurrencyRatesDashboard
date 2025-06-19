@@ -1,15 +1,32 @@
 ﻿@page "/logout"
 @rendermode InteractiveServer
 
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
 @inject NavigationManager NavigationManager
 
 @inject AuthService AuthService
 
+<AuthorizeView>
+    <Authorized>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+            <RadzenButton Click=@(LogoutUser) Text="Выйти" ButtonStyle="ButtonStyle.Primary" />
+        </RadzenStack>
+    </Authorized>
+    <NotAuthorized>
+       
+    </NotAuthorized>
+</AuthorizeView>
 @code{
 
-    protected override void OnInitialized()
+    private async Task LogoutUser()
     {
-        
+        var success = await JS.InvokeAsync<bool>("authLogout");
+        if (success)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
     }
 
 }

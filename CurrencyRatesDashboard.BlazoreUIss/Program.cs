@@ -22,7 +22,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Radzen;
-using CookieService = CurrencyRatesDashboard.BlazoreUIss.Services.Auth.CookieService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,9 +47,6 @@ builder.Services.AddValidatorsFromAssembly(typeof(CurrencyRateValidator).Assembl
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-builder.Services.AddScoped<CookieService>();
-builder.Services.AddScoped<AccessTokenService>();
 
 builder.Services.AddHttpClient<AuthService>(client =>
 {
@@ -117,8 +113,8 @@ builder.Services.AddAuthorization(options =>
         });
     }
 );
-builder.Services.AddScoped<JWTAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider, JWTAuthenticationStateProvider>();
+
+
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();

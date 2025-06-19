@@ -39,5 +39,11 @@ public class CookieService : ICookieService
             Secure = false,
             SameSite = SameSiteMode.Strict
         });
+        response.Cookies.Delete("AccessToken", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Strict
+        });
     }
 }

@@ -29,12 +29,4 @@ public abstract class AggregateRoot : Entity
 
         _domainEvents.Add(domainEvent);
     }
-    
-    public void ClearDomainEvents() 
-    {
-        if (_domainEvents != null && _domainEvents.Count > 0)
-        {
-            _domainEvents.Clear();
-        }
-    }
 }

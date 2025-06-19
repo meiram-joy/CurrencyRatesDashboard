@@ -2,35 +2,53 @@
 using System.Security.Claims;
 using CurrencyRatesDashboard.BlazoreUIss.Services.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.JSInterop;
 
 namespace CurrencyRatesDashboard.BlazoreUIss.Security;
 
 public class JWTAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly AccessTokenService _accessTokenService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IJSRuntime _jsRuntime;
 
-    public JWTAuthenticationStateProvider(AccessTokenService accessTokenService)
+    public JWTAuthenticationStateProvider(IHttpContextAccessor httpContextAccessor, IJSRuntime jsRuntime)
     {
-        _accessTokenService = accessTokenService;
+        _jsRuntime = jsRuntime;
+        _httpContextAccessor = httpContextAccessor;
     }
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            var token = await _accessTokenService.GetTokenAsync();
-            if (string.IsNullOrEmpty(token))
-                return await MarkAsUnauthenticated();
-            
-            var readJWT = new JwtSecurityTokenHandler().ReadJwtToken(token);
-            var identity = new ClaimsIdentity(readJWT.Claims, "JWT");
-            var principal = new ClaimsPrincipal(identity);
-            
-            return await Task.FromResult(new AuthenticationState(principal));
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (user?.Identity is { IsAuthenticated: true } && TokenIsExpired(user))
+            {
+                var refreshed = await _jsRuntime.InvokeAsync<bool>("authRefresh");
+                if (refreshed)
+                {
+                    user = _httpContextAccessor.HttpContext?.User;
+                }
+                else
+                {
+                    return await  MarkAsUnauthenticated();
+                }
+            }
+            return new AuthenticationState(user ?? new ClaimsPrincipal(new ClaimsIdentity()));
         }
         catch (Exception e)
         {
             return await MarkAsUnauthenticated();
         }
+    }
+    private bool TokenIsExpired(ClaimsPrincipal user)
+    {
+        var exp = user.FindFirst("exp")?.Value;
+        if (exp == null) return true;
+
+        var expiryUnix = long.Parse(exp);
+        var expiryDate = DateTimeOffset.FromUnixTimeSeconds(expiryUnix);
+        return DateTimeOffset.UtcNow > expiryDate;
     }
     private async Task<AuthenticationState>  MarkAsUnauthenticated()
     {
@@ -46,3 +64,4 @@ public class JWTAuthenticationStateProvider : AuthenticationStateProvider
         }
     }
 }
+

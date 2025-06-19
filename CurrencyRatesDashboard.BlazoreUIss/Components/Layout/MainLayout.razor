@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
+@using CurrencyRatesDashboard.BlazoreUIss.Components.Pages.Logout
 @inject NavigationManager Navigation
 
 
@@ -20,10 +21,7 @@
 
             <main>
                 <div class="top-row px-4">
-                    @if (!(authState.User.Identity?.IsAuthenticated ?? false))
-                    {
-                        <a href="/logout">Выйти</a>
-                    }
+                    <Logout/>
                 </div>
 
                 <article class="content px-4">
