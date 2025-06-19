@@ -1,57 +1,52 @@
-@page "/"
-@using Radzen
-@using CurrencyRatesDashboard.BlazoreUIss.Components.Pages
-@using Radzen.Blazor
-@using global::CurrencyRates.Application.Commands
-@using global::CurrencyRates.Application.DTOs
-@using global::CurrencyRates.Application.Interfaces
-@using global::CurrencyRates.Application.Queries
-@using global::CurrencyRates.Infrastructure.Services.Export
-@inject ICurrencyRateService CurrencyRateService
+@page "/CurrencyRatesPage"
+@attribute [Authorize]
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject ExportService ExportService
 @inject MediatR.IMediator Mediator
+@rendermode RenderMode.InteractiveServer
+@layout MainLayout
 
-
-<RadzenDataGrid @ref="_grid"
-Data="@_currencyRates"
-TItem="CurrencyRateDto"
-AllowFiltering="true"
-AllowSorting="true"
-AllowPaging="true"
-AllowColumnPicking="true"
-PageSize="10"
-Style="margin-top: 20px;">
-    <HeaderTemplate>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
-            <RadzenButton Text="Обновить" Icon="refresh" ButtonStyle="ButtonStyle.Primary"
-            Click="@OnRefreshClick" />
-            <RadzenButton Text="Export XLS" Icon="grid_on"
-            Click="@(args => Export("excel"))" />
-        </RadzenStack>
-    </HeaderTemplate>
-    <Columns>
-        <RadzenDataGridColumn TItem="CurrencyRateDto" Property="CurrencyName" Title="Валюта" Width="200px" />
-        <RadzenDataGridColumn TItem="CurrencyRateDto" Property="CurrencyCode" Title="Код" Width="100px" />
-        <RadzenDataGridColumn TItem="CurrencyRateDto" Property="Rate" Title="Курс" Width="120px">
-            <Template Context="data">
-                @data.Rate.ToString("N4")
-            </Template>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="CurrencyRateDto" Property="Date" Title="Дата" Width="150px">
-            <Template Context="data">
-                @data.Date.ToString("dd.MM.yyyy")
-            </Template>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="CurrencyRateDto" Title="Действия" Width="150px">
-            <Template Context="data">
-                <RadzenButton Icon="visibility" ButtonStyle="ButtonStyle.Secondary"
-                              Click="@(args => CurrencyRateTransposedDialog(data))" />
-            </Template>
-        </RadzenDataGridColumn>
-    </Columns>
-</RadzenDataGrid>
+<AuthorizeView>
+    <RadzenDataGrid @ref="_grid"
+                    Data="@_currencyRates"
+                    TItem="CurrencyRateDto"
+                    AllowFiltering="true"
+                    AllowSorting="true"
+                    AllowPaging="true"
+                    AllowColumnPicking="true"
+                    PageSize="10"
+                    Style="margin-top: 20px;">
+        <HeaderTemplate>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+                <RadzenButton Text="Обновить" Icon="refresh" ButtonStyle="ButtonStyle.Primary"
+                              Click="@OnRefreshClick" />
+                <RadzenButton Text="Export XLS" Icon="grid_on"
+                              Click="@(args => Export("excel"))" />
+            </RadzenStack>
+        </HeaderTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="CurrencyRateDto" Property="CurrencyName" Title="Валюта" Width="200px" />
+            <RadzenDataGridColumn TItem="CurrencyRateDto" Property="CurrencyCode" Title="Код" Width="100px" />
+            <RadzenDataGridColumn TItem="CurrencyRateDto" Property="Rate" Title="Курс" Width="120px">
+                <Template Context="data">
+                    @data.Rate.ToString("N4")
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="CurrencyRateDto" Property="Date" Title="Дата" Width="150px">
+                <Template Context="data">
+                    @data.Date.ToString("dd.MM.yyyy")
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="CurrencyRateDto" Title="Действия" Width="150px">
+                <Template Context="data">
+                    <RadzenButton Icon="visibility" ButtonStyle="ButtonStyle.Secondary"
+                                  Click="@(args => CurrencyRateTransposedDialog(data))" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</AuthorizeView>
 
 
 @code {

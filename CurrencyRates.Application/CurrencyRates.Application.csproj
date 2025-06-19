@@ -17,7 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Interfaces\Auth\" />
+	  <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+	    <HintPath>..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.2\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

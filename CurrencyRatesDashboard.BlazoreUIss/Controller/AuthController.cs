@@ -1,10 +1,8 @@
 ﻿using CurrencyRates.Application.Commands.Auth.LoginUser;
+using CurrencyRates.Application.Commands.Auth.LogoutUser;
 using CurrencyRates.Application.Commands.Auth.RefreshToken;
-using CurrencyRates.Domain.Currency.Interfaces.Auth;
-using CurrencyRates.Domain.Currency.ValueObjects.Auth;
-using CurrencyRates.Infrastructure.Services.Auth;
-using CurrencyRatesDashboard.BlazoreUIss.Models;
-using CurrencyRatesDashboard.BlazoreUIss.Models.Auth;
+using CurrencyRates.Application.DTOs.Auth;
+using CurrencyRates.Application.Interfaces.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,23 +14,34 @@ namespace CurrencyRatesDashboard.BlazoreUIss.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ICookieService _cookieService;
 
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, ICookieService cookieService)
     {
         _mediator = mediator;
+        _cookieService = cookieService;
     }
+    
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        
+        _cookieService.SetRefreshTokenAndAccessTokenCookie(result.Value.RefreshToken,result.Value.AccessToken,Response);
+        return Ok(new { accessToken = result.Value.AccessToken });
     }
     
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        
+        _cookieService.SetRefreshTokenAndAccessTokenCookie(result.Value.RefreshToken,result.Value.AccessToken,Response);
+        return Ok(new { accessToken = result.Value.AccessToken });
     }
     
     [Authorize(Policy = "AdminOnly")]
@@ -43,35 +52,24 @@ public class AuthController : ControllerBase
         if (!result.IsSuccess)
             return BadRequest(result.Error);
         
-        SetRefreshTokenCookie(result.Value.RefreshToken);
+        _cookieService.SetRefreshTokenAndAccessTokenCookie(result.Value.RefreshToken,result.Value.AccessToken,Response);
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] string refreshToken, CancellationToken cancellationToken)
+    public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst("sub")?.Value;
 
         if (!Guid.TryParse(userId, out var guid))
             return Unauthorized("Invalid token");
 
-        var command = new RefreshTokenCommand(guid, refreshToken);
+        var command = new LogoutUserCommand(guid, request.RefreshToken);
         var result = await _mediator.Send(command, cancellationToken);
+        
+        _cookieService.DeleteRefreshTokenCookie(Response);
 
-        return result.IsSuccess ? Ok() : BadRequest(result.Error);
-    }
-    public void SetRefreshTokenCookie(string refreshToken)
-    {
-        Response.Cookies.Append(
-            "refreshToken",
-            refreshToken,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            });
+        return result.IsSuccess ? Ok( new {success = true}) : BadRequest(result.Error);
     }
 }

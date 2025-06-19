@@ -7,6 +7,7 @@ using CurrencyRates.Infrastructure.Repositories;
 using CurrencyRates.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using CurrencyRates.Application.Interfaces.Auth;
 using CurrencyRates.Domain.Currency.Interfaces.Auth;
 using CurrencyRates.Domain.Currency.Services;
 using CurrencyRates.Infrastructure.Repositories.Auth;
@@ -38,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAuthDomainService, AuthDomainService>();
+        services.AddScoped<ICookieService, CookieService>();
         return services;
     }
 }

@@ -1,25 +1,45 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
 
-<RadzenDialog />
-<RadzenComponents/>
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+<RadzenComponents @rendermode="InteractiveServer" />
+<CascadingAuthenticationState>
+    @if (authState != null)
+    {
+        <RadzenDialog />
+        <RadzenComponents />
+
+        <div class="page">
+            @if (authState.User.Identity?.IsAuthenticated ?? false)
+            {
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
+            }
+
+            <main>
+                <div class="top-row px-4">
+                    @if (!(authState.User.Identity?.IsAuthenticated ?? false))
+                    {
+                        <a href="/login">Login</a>
+                    }
+                </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
         </div>
+    }
+</CascadingAuthenticationState>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    private AuthenticationState authState;
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await AuthenticationStateTask;
+    }
+}

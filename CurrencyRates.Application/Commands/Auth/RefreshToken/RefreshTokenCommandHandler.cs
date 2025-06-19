@@ -9,11 +9,15 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand,  
 {
     private readonly IUserRepository _userRepository;
     private readonly IAuthDomainService _authDomainService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-    public RefreshTokenCommandHandler(IUserRepository userRepository, IAuthDomainService authDomainService)
+    public RefreshTokenCommandHandler(IUserRepository userRepository, 
+        IAuthDomainService authDomainService,
+        IRefreshTokenRepository refreshTokenRepository)
     {
         _userRepository = userRepository;
         _authDomainService = authDomainService;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<Result<(string, string)>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)

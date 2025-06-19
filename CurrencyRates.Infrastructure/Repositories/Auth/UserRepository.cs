@@ -22,14 +22,23 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
         
-        const string sql = @"SELECT Id, Email, PasswordHash, Role FROM Users WHERE Id = @Id";
+        const string sql = @"SELECT u.Id, u.Email, u.PasswordHash, u.Role, rt.Token, rt.Expires 
+                            FROM Users u LEFT JOIN RefreshTokens rt ON u.Id = rt.UserId AND rt.IsInvalidated = 0 WHERE u.Id = @Id";
+        User? user = null;
+        var refreshTokens = new List<RefreshToken>();
         
-        var userDto = await connection.QuerySingleOrDefaultAsync<UserDto>(sql, new { Id = id });
+        await connection.QueryAsync<UserDto, RefreshTokenDto,UserDto>(sql, (userDto, tokenDto) =>
+        {
+            if (user == null) user = MapToUser(userDto);
+            if (tokenDto?.Token != null)
+            {
+                var refreshToken = new RefreshToken(tokenDto.Token, tokenDto.Expires);
+                user?.AddRefreshToken(refreshToken);
+            }
+            return userDto;
+        }, new { Id = id }, splitOn: "Token");
         
-        if (userDto == null)
-            return null;
-        
-        return MapToUser(userDto);
+        return user;
     }
 
     public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
@@ -114,5 +123,11 @@ public class UserRepository : IUserRepository
         public string Email { get; set; } = default!;
         public string PasswordHash { get; set; } = default!;
         public string Role { get; set; } = default!;
+    }
+    
+    private class RefreshTokenDto
+    {
+        public string Token { get; set; } = default!;
+        public DateTime Expires { get; set; }
     }
 }

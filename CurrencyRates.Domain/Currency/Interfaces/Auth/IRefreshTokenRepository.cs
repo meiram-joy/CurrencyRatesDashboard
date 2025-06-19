@@ -7,5 +7,4 @@ public interface IRefreshTokenRepository
     Task SaveAsync(Guid userId, RefreshToken refreshToken, CancellationToken cancellationToken = default);
     Task<bool> ValidateAsync(Guid userId, RefreshToken refreshToken, CancellationToken cancellationToken = default);
     Task InvalidateAsync(Guid userId, RefreshToken refreshToken, CancellationToken cancellationToken = default);
-    Task<RefreshToken?> GetAsync(Guid userId, string refreshToken, CancellationToken cancellationToken = default);
 }

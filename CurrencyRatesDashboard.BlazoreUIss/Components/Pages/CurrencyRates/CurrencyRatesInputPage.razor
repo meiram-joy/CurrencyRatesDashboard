@@ -1,15 +1,13 @@
 ﻿@page "/CurrencyRatesInputPage"
-@using global::CurrencyRates.Application.Commands
-@using global::CurrencyRates.Application.DTOs
-@using global::CurrencyRates.Application.Queries
-@using MediatR
 @inject MediatR.IMediator Mediator
 @inject NotificationService NotificationService
 @rendermode RenderMode.InteractiveServer
+@layout MainLayout
+@attribute [Authorize]
 
-
+<AuthorizeView>
 <div class="rz-p-0 rz-p-md-12" style="">
-   <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem">
+    <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem">
         <RadzenColumn Size="12" SizeSM="6" >
             <RadzenStack >
                 <RadzenFormField Text="Код" Variant="@variant">
@@ -29,6 +27,7 @@
         </RadzenColumn>
     </RadzenRow>
 </div>
+</AuthorizeView>
 
 @code {
     private IReadOnlyList<CurrencyRateDto> _currencyRates = new List<CurrencyRateDto>();

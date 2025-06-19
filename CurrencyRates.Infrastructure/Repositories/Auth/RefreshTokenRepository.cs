@@ -19,8 +19,8 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
 
-        const string sql = @"INSERT INTO RefreshTokens (UserId, Token, Expires)
-                             VALUES (@UserId, @Token, @Expires)";
+        const string sql = @"INSERT INTO RefreshTokens (UserId, Token, Expires, IsInvalidated)
+                             VALUES (@UserId, @Token, @Expires,0)";
 
         await connection.ExecuteAsync(sql, new
         {
@@ -37,7 +37,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 
         const string sql = @"SELECT COUNT(1)
                              FROM RefreshTokens
-                             WHERE UserId = @UserId AND Token = @Token AND Expires > @Now";
+                             WHERE UserId = @UserId AND Token = @Token AND Expires > @Now AND IsInvalidated = 0";
 
         var count = await connection.ExecuteScalarAsync<int>(sql, new
         {
@@ -54,7 +54,9 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
 
-        const string sql = @"DELETE FROM RefreshTokens WHERE UserId = @UserId AND Token = @Token";
+        const string sql = @"UPDATE RefreshTokens 
+                            SET IsInvalidated = 1 
+                            WHERE UserId = @UserId AND Token = @Token";
 
         await connection.ExecuteAsync(sql, new
         {
@@ -62,24 +64,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
             Token = refreshToken.Token
         });
     }
-
-    public async Task<RefreshToken?> GetAsync(Guid userId, string token, CancellationToken cancellationToken = default)
-    {
-        using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
-        await connection.OpenAsync(cancellationToken);
-
-        const string sql = @"SELECT Token, Expires
-                             FROM RefreshTokens
-                             WHERE UserId = @UserId AND Token = @Token";
-
-        var dto = await connection.QuerySingleOrDefaultAsync<RefreshTokenDto>(sql, new
-        {
-            UserId = userId,
-            Token = token
-        });
-
-        return MapToRefreshToken(dto);
-    }
+    
     private static RefreshToken? MapToRefreshToken(RefreshTokenDto? dto)
     {
         if (dto == null)
