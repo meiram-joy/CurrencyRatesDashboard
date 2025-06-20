@@ -5,7 +5,6 @@ using CurrencyRates.Application.Behaviors;
 using CurrencyRates.Application.Interfaces;
 using CurrencyRates.Application.Services;
 using CurrencyRates.Application.Validators;
-using CurrencyRates.Domain.Currency.Services;
 using CurrencyRates.Domain.Currency.ValueObjects.Auth;
 using CurrencyRates.Infrastructure;
 using CurrencyRates.Infrastructure.External;
@@ -14,7 +13,6 @@ using CurrencyRates.Infrastructure.Services.Auth;
 using CurrencyRates.Infrastructure.Services.Export;
 using CurrencyRatesDashboard.BlazoreUIss.Components;
 using CurrencyRatesDashboard.BlazoreUIss.Security;
-using CurrencyRatesDashboard.BlazoreUIss.Services;
 using CurrencyRatesDashboard.BlazoreUIss.Services.Auth;
 using FluentValidation;
 using MediatR;
@@ -45,6 +43,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(CurrencyRateValidator).Assembl
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<AuthenticationStateProvider, JWTAuthenticationStateProvider>();
 
 builder.Services.AddHttpClient<AuthService>(client =>
 {
@@ -155,7 +154,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 var app = builder.Build();
 app.UseCors();
 
-app.UseAuthentication(); // 👈 обязательно ДО UseAuthorization
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllers(); 
