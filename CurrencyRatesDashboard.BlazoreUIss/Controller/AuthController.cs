@@ -1,6 +1,7 @@
 ﻿using CurrencyRates.Application.Commands.Auth.LoginUser;
 using CurrencyRates.Application.Commands.Auth.LogoutUser;
 using CurrencyRates.Application.Commands.Auth.RefreshToken;
+using CurrencyRates.Application.Commands.Auth.RegisterUser;
 using CurrencyRates.Application.DTOs.Auth;
 using CurrencyRates.Application.Interfaces.Auth;
 using MediatR;

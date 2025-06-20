@@ -22,7 +22,7 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
         
-        const string sql = @"SELECT u.Id, u.Email, u.PasswordHash, u.Role, rt.Token, rt.Expires 
+        const string sql = @"SELECT u.Id, u.Email, u.PasswordHash, u.Role, u.FirstName,u.LastName,u.PhoneNumber,u.FullName, rt.Token, rt.Expires 
                             FROM Users u LEFT JOIN RefreshTokens rt ON u.Id = rt.UserId AND rt.IsInvalidated = 0 WHERE u.Id = @Id";
         User? user = null;
         var refreshTokens = new List<RefreshToken>();
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
 
-        const string sql = @"SELECT Id, Email, PasswordHash, Role FROM Users WHERE LOWER(Email) = LOWER(@Email)";
+        const string sql = @"SELECT Id, Email, PasswordHash, Role,FirstName, LastName,PhoneNumber,FullName FROM Users WHERE LOWER(Email) = LOWER(@Email)";
 
         var userDto = await connection.QuerySingleOrDefaultAsync<UserDto>(sql, new { Email = email.Value });
         
@@ -58,15 +58,19 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
 
-        const string sql = @"INSERT INTO Users (Id, Email, PasswordHash, Role)
-                             VALUES (@Id, @Email, @PasswordHash, @Role)";
+        const string sql = @"INSERT INTO Users (Id, Email, PasswordHash, Role,FirstName, LastName,PhoneNumber, FullName)
+                             VALUES (@Id, @Email, @PasswordHash, @Role, @FirstName, @LastName, @PhoneNumber, @FullName)";
 
         await connection.ExecuteAsync(sql, new
         {
             Id = user.ID,
             Email = user.Email.Value,
             PasswordHash = user.PasswordHash.Hash,
-            Role = user.Role.Name
+            Role = user.Role.Name,
+            FirstName = user.FullName.FirstName,
+            LastName = user.FullName.LastName,
+            PhoneNumber = user.PhoneNumber.Value,
+            FullName = user.FullName.LastName + " " + user.FullName.FirstName
         });
     }
 
@@ -78,7 +82,11 @@ public class UserRepository : IUserRepository
         const string sql = @"UPDATE Users 
                              SET Email = @Email,
                                  PasswordHash = @PasswordHash,
-                                 Role = @Role
+                                 Role = @Role,
+                                 FirstName = @FirstName,
+                                 LastName = @LastName,
+                                 FullName = @FullName,
+                                 PhoneNumber = @PhoneNumber
                              WHERE Id = @Id";
 
         await connection.ExecuteAsync(sql, new
@@ -86,7 +94,11 @@ public class UserRepository : IUserRepository
             Id = user.ID,
             Email = user.Email.Value,
             PasswordHash = user.PasswordHash.Hash,
-            Role = user.Role.Name
+            Role = user.Role.Name,
+            FirstName = user.FullName.FirstName,
+            LastName = user.FullName.LastName,
+            FullName = user.FullName.LastName + " " + user.FullName.FirstName,
+            PhoneNumber = user.PhoneNumber.Value
         });
     }
     
@@ -99,7 +111,10 @@ public class UserRepository : IUserRepository
             Id TEXT PRIMARY KEY,
             Email VARCHAR(256) NOT NULL UNIQUE,
             PasswordHash VARCHAR(512) NOT NULL,
-            Role VARCHAR(50) NOT NULL
+            Role VARCHAR(50) NOT NULL,
+            FirstName TEXT,
+            LastName TEXT,
+            PhoneNumber TEXT NOT NULL
         );
     ";
         using var cmd = connection.CreateCommand();
@@ -112,8 +127,7 @@ public class UserRepository : IUserRepository
         if (dto is null)
             return null;
         
-
-        var result = User.Create(dto.Id,dto.Email, dto.PasswordHash, dto.Role);
+        var result = User.Create(dto.Id,dto.Email, dto.PasswordHash, dto.Role, dto.FirstName, dto.LastName, dto.PhoneNumber);
         return result.IsSuccess ? result.Value : null;
     }
     
@@ -123,6 +137,12 @@ public class UserRepository : IUserRepository
         public string Email { get; set; } = default!;
         public string PasswordHash { get; set; } = default!;
         public string Role { get; set; } = default!;
+        
+        public string FirstName { get; set; } = default!;
+        
+        public string LastName { get; set; } = default!;
+        
+        public string PhoneNumber { get; set; } = default!;
     }
     
     private class RefreshTokenDto

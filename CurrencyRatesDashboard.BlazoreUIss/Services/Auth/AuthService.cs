@@ -38,13 +38,16 @@ public class AuthService
 
     }
 
-    public async Task<bool> RegisterAsync(string email, string password,string role)
+    public async Task<bool> RegisterAsync(string email, string password,string role,string PhoneNumber, string FirstName, string LastName)
     {
         var response = await _http.PostAsJsonAsync("http://localhost:5280/api/auth/register", new
         {
             Email = email,
             Password = password,
-            Role = role
+            Role = role,
+            PhoneNumber = PhoneNumber,
+            FirstName = FirstName,
+            LastName = LastName
         });
         
         

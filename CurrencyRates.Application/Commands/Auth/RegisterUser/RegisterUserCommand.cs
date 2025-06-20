@@ -1,8 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using CurrencyRates.Application.DTOs.Auth;
-using CurrencyRates.Domain.Currency.ValueObjects.Auth;
 using MediatR;
 
-namespace CurrencyRates.Application.Commands.Auth.RefreshToken;
+namespace CurrencyRates.Application.Commands.Auth.RegisterUser;
 
-public record LoginUserCommand(Email Email, string Password) : IRequest<Result<AuthResultDto>>;
+public record RegisterUserCommand(string Email, string Password, string Role, string PhoneNumber,string FirstName,string LastName) : IRequest<Result<AuthResultDto>>;

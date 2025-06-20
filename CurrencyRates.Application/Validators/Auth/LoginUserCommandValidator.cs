@@ -1,4 +1,6 @@
-﻿using CurrencyRates.Application.Commands.Auth.RefreshToken;
+﻿using CurrencyRates.Application.Commands.Auth.LoginUser;
+using CurrencyRates.Application.Commands.Auth.RefreshToken;
+using CurrencyRates.Application.Commands.Auth.RegisterUser;
 using FluentValidation;
 
 namespace CurrencyRates.Application.Validators.Auth;

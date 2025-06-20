@@ -1,4 +1,5 @@
 ﻿using CurrencyRates.Application.Commands.Auth.LoginUser;
+using CurrencyRates.Application.Commands.Auth.RegisterUser;
 using FluentValidation;
 
 public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>

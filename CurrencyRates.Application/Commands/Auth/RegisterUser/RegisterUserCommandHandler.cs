@@ -23,7 +23,7 @@ public class RegisterUserCommandHandler :  IRequestHandler<RegisterUserCommand, 
 
     public async Task<Result<AuthResultDto>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var userResult = User.Register(request.Email, request.Password, request.Role);
+        var userResult = User.Register(request.Email, request.Password, request.Role, request.FirstName, request.LastName, request.PhoneNumber);
         if (userResult.IsFailure)
             return Result.Failure<AuthResultDto>(userResult.Error);
 

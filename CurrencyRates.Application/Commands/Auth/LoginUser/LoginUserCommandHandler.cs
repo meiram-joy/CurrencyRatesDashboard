@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using CurrencyRates.Application.Commands.Auth.RefreshToken;
+using CurrencyRates.Application.Commands.Auth.RegisterUser;
 using CurrencyRates.Application.DTOs.Auth;
 using CurrencyRates.Domain.Currency.Interfaces.Auth;
 using CurrencyRates.Domain.Currency.Services;
