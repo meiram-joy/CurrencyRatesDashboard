@@ -1,43 +1,74 @@
 ﻿@inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Components.Authorization
 @using CurrencyRatesDashboard.BlazoreUIss.Components.Pages.Logout
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 
-<RadzenComponents @rendermode="InteractiveServer" />
+<RadzenComponents @rendermode="InteractiveAuto" />
 <CascadingAuthenticationState>
     @if (authState != null)
     {
         <RadzenDialog />
         <RadzenComponents />
-
-        <div class="page">
-            @if (authState.User.Identity?.IsAuthenticated ?? false)
-            {
-                <div class="sidebar">
-                    <NavMenu />
-                </div>
-            }
-
-            <main>
-                <div class="top-row px-4">
-                    <Logout/>
-                </div>
-
-                <article class="content px-4">
+        <RadzenLayout Style="grid-template-areas: 'rz-sidebar rz-header' 'rz-sidebar rz-body'">
+            <AuthorizeView>
+                <Authorized>
+                    <RadzenHeader>
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+                            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)"/>
+                            <RadzenLabel Text="Header"/>
+                            <div style="margin-left: auto; margin-right: 2rem; display: flex; align-items: center; gap: 1rem;">
+                                <RadzenAppearanceToggle @bind-Value="isDarkTheme"/>
+                                <Logout/>
+                            </div>
+                        </RadzenStack>
+                    </RadzenHeader>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView>
+                <Authorized>
+                    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+                        <RadzenPanelMenu>
+                            <RadzenPanelMenuItem Text="Валюта" Icon="account_balance" Path="/CurrencyRatesPage"/>
+                            <RadzenPanelMenuItem Text="Добавить валюту" Icon="add_circle" Path="/CurrencyRatesInputPage"/>
+                        </RadzenPanelMenu>
+                    </RadzenSidebar>
+                </Authorized>
+            </AuthorizeView>
+            <RadzenBody>
+                <div class="rz-p-4">
                     @Body
-                </article>
-            </main>
-        </div>
+                </div>
+            </RadzenBody>
+        </RadzenLayout>
     }
 </CascadingAuthenticationState>
 
 @code {
+    
+    private bool isDarkTheme = true;
+    bool sidebarExpanded = true;
+    
     [CascadingParameter] private Task<AuthenticationState> AuthenticationStateTask { get; set; }
     private AuthenticationState authState;
 
     protected override async Task OnInitializedAsync()
     {
         authState = await AuthenticationStateTask;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await UpdateTheme();
+    }
+    
+    private async Task UpdateTheme()
+    {
+        var themeMode = isDarkTheme ? "light" : "dark";
+        await JS.InvokeVoidAsync("setBodyClass", themeMode);
+    }
+    private async Task OnThemeChanged(bool value)
+    {
+        isDarkTheme = value;
+        await UpdateTheme();
     }
 }

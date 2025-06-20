@@ -1,0 +1,28 @@
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Светлая тема */
+body:not(.rz-dark-theme) {
+    --rz-background-color: #ffffff;
+    --rz-text-color: #000000;
+    background-color: var(--rz-background-color);
+    color: var(--rz-text-color);
+}
+
+/* Тёмная тема */
+body.rz-dark-theme {
+    --rz-background-color: #121212;
+    --rz-text-color: #ffffff;
+    background-color: var(--rz-background-color);
+    color: var(--rz-text-color);
+}
+
+/* Наследование фона */
+.page,
+main,
+.content,
+.top-row {
+    background-color: var(--rz-background-color);
+    color: var(--rz-text-color);
+}

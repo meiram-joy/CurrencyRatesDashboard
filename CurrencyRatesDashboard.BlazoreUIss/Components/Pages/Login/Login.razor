@@ -46,7 +46,8 @@
                     Detail = $"Добро пожаловать, {loginModel.Email}!",
                     Duration = 4000
                 });
-                nav.NavigateTo("/CurrencyRatesInputPage", forceLoad: true);
+                await Task.Delay(1000);
+                nav.NavigateTo("/CurrencyRatesPage", forceLoad: true);
             }
             else
             {
@@ -54,7 +55,7 @@
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Ошибка входа",
-                    Detail = $"Попробуйте ввести пароль!",
+                    Detail = $"Попробуйте ввести верный пароль",
                     Duration = 4000
                 });
             }
