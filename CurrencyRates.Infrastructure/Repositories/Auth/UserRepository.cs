@@ -22,7 +22,7 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
         
-        const string sql = @"SELECT u.Id, u.Email, u.PasswordHash, u.Role, u.FirstName,u.LastName,u.PhoneNumber,u.FullName, rt.Token, rt.Expires 
+        const string sql = @"SELECT u.Id, u.Email, u.PasswordHash, u.Role, u.FirstName,u.LastName,u.PhoneNumber, rt.Token, rt.Expires 
                             FROM Users u LEFT JOIN RefreshTokens rt ON u.Id = rt.UserId AND rt.IsInvalidated = 0 WHERE u.Id = @Id";
         User? user = null;
         var refreshTokens = new List<RefreshToken>();
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
 
-        const string sql = @"SELECT Id, Email, PasswordHash, Role,FirstName, LastName,PhoneNumber,FullName FROM Users WHERE LOWER(Email) = LOWER(@Email)";
+        const string sql = @"SELECT Id, Email, PasswordHash, Role,FirstName, LastName,PhoneNumber FROM Users WHERE LOWER(Email) = LOWER(@Email)";
 
         var userDto = await connection.QuerySingleOrDefaultAsync<UserDto>(sql, new { Email = email.Value });
         
@@ -58,8 +58,8 @@ public class UserRepository : IUserRepository
         using var connection = new SqliteConnection(_configuration.GetConnectionString("DefaultConnection"));
         await connection.OpenAsync(cancellationToken);
 
-        const string sql = @"INSERT INTO Users (Id, Email, PasswordHash, Role,FirstName, LastName,PhoneNumber, FullName)
-                             VALUES (@Id, @Email, @PasswordHash, @Role, @FirstName, @LastName, @PhoneNumber, @FullName)";
+        const string sql = @"INSERT INTO Users (Id, Email, PasswordHash, Role,FirstName, LastName,PhoneNumber)
+                             VALUES (@Id, @Email, @PasswordHash, @Role, @FirstName, @LastName, @PhoneNumber)";
 
         await connection.ExecuteAsync(sql, new
         {
@@ -69,8 +69,7 @@ public class UserRepository : IUserRepository
             Role = user.Role.Name,
             FirstName = user.FullName.FirstName,
             LastName = user.FullName.LastName,
-            PhoneNumber = user.PhoneNumber.Value,
-            FullName = user.FullName.LastName + " " + user.FullName.FirstName
+            PhoneNumber = user.PhoneNumber.Value
         });
     }
 
@@ -85,7 +84,6 @@ public class UserRepository : IUserRepository
                                  Role = @Role,
                                  FirstName = @FirstName,
                                  LastName = @LastName,
-                                 FullName = @FullName,
                                  PhoneNumber = @PhoneNumber
                              WHERE Id = @Id";
 

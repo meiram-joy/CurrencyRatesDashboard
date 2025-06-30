@@ -1,9 +1,10 @@
-﻿using CurrencyRates.Application.Interfaces;
+﻿using CSharpFunctionalExtensions;
+using CurrencyRates.Application.Interfaces;
 using MediatR;
 
 namespace CurrencyRates.Application.Commands;
 
-public class RefreshCurrencyRatesCommandHandler : IRequestHandler<RefreshCurrencyRatesCommand, Unit>
+public class RefreshCurrencyRatesCommandHandler : IRequestHandler<RefreshCurrencyRatesCommand, Result<Unit>>
 {
     private readonly ICurrencyRateService _service;
 
@@ -12,7 +13,7 @@ public class RefreshCurrencyRatesCommandHandler : IRequestHandler<RefreshCurrenc
         _service = service;
     }
     
-    public async Task<Unit> Handle(RefreshCurrencyRatesCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Unit>> Handle(RefreshCurrencyRatesCommand request, CancellationToken cancellationToken)
     {
         await _service.RefreshRatesAsync(cancellationToken);
         return Unit.Value;

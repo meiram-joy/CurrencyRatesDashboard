@@ -1,5 +1,6 @@
-﻿using MediatR;
+﻿using CSharpFunctionalExtensions;
+using MediatR;
 
 namespace CurrencyRates.Application.Commands;
 
-public record RefreshCurrencyRatesCommand() : IRequest<Unit>;
+public record RefreshCurrencyRatesCommand() : IRequest<Result<Unit>>;

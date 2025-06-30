@@ -5,7 +5,7 @@ namespace CurrencyRates.Infrastructure.Services.Auth;
 
 public class CookieService : ICookieService
 {
-    public void SetRefreshTokenAndAccessTokenCookie(string refreshToken,string accessToken, HttpResponse response)
+    public void SetRefreshTokenAndAccessTokenCookie(string refreshToken, string accessToken, HttpResponse response)
     {
         response.Cookies.Append(
             "refreshToken",

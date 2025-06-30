@@ -4,6 +4,9 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>ca5748a3-a7b8-46cf-8fdd-7341c46707e5</UserSecretsId>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,15 +14,39 @@
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1-Preview.1" />
     <PackageReference Include="Radzen.Blazor" Version="7.0.8" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CurrencyRates.Application\CurrencyRates.Application.csproj" />
     <ProjectReference Include="..\CurrencyRates.Infrastructure\CurrencyRates.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="..\.dockerignore" />
   </ItemGroup>
 
 </Project>

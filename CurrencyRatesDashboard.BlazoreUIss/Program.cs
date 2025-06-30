@@ -20,11 +20,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Radzen;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Host.UseSerilog((context, configuration) => 
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 
 builder.Services.AddScoped<ExportService>();
@@ -40,6 +44,8 @@ builder.Services.AddScoped<ThemeService>();
 
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssembly(typeof(CurrencyRateValidator).Assembly);
+
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -112,7 +118,6 @@ builder.Services.AddAuthorization(options =>
 );
 
 
-
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 
@@ -165,6 +170,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
